@@ -1,0 +1,91 @@
+{
+	"ROUTING_TOKEN": {
+		"ModuleName": "Smart Token Routing",
+		"ModuleDescription": "Enhances token movement with intelligent pathfinding",
+		
+		"Settings": {
+			"EnablePathfinding": "Enable Smart Pathfinding",
+			"EnablePathfindingHint": "Automatically calculate optimal paths around walls and obstacles when moving tokens",
+			
+			"VisualizePath": "Visualize Calculated Paths",
+			"VisualizePathHint": "Show the calculated pathfinding route on the canvas during token movement",
+			
+			"MaxPathDistance": "Maximum Path Distance",
+			"MaxPathDistanceHint": "Maximum distance (in grid units) for pathfinding calculations. Higher values may impact performance.",
+			
+			"DebugMode": "Enable Debug Mode",
+			"DebugModeHint": "Show detailed pathfinding information in the console and on-screen overlays"
+		},
+		
+		"Notifications": {
+			"ModuleReady": "Smart Token Routing is ready and pathfinding is enabled",
+			"RoutinglibNotFound": "Routinglib module not found - pathfinding will be disabled",
+			"RoutinglibReady": "Routinglib is now available - pathfinding enabled",
+			"PathfindingEnabled": "Smart pathfinding enabled",
+			"PathfindingDisabled": "Smart pathfinding disabled",
+			"PathCalculated": "Optimal path calculated with {waypoints} waypoints",
+			"PathCalculationFailed": "Could not calculate optimal path - using direct movement",
+			"PathTooLong": "Path exceeds maximum distance limit",
+			"PathfindingError": "Pathfinding calculation error: {error}"
+		},
+		
+		"UI": {
+			"Status": {
+				"Ready": "Smart Routing Ready",
+				"Calculating": "Calculating Path...",
+				"Active": "Pathfinding Active",
+				"Disabled": "Pathfinding Disabled",
+				"Error": "Pathfinding Error",
+				"NoRoute": "No Route Found"
+			},
+			
+			"Debug": {
+				"Title": "Smart Routing Debug",
+				"Status": "Status",
+				"LastPath": "Last Path",
+				"Waypoints": "Waypoints",
+				"Distance": "Distance",
+				"Cost": "Cost",
+				"Time": "Calc Time",
+				"ActiveJobs": "Active Jobs"
+			},
+			
+			"PathCost": "{distance} units"
+		},
+		
+		"API": {
+			"Errors": {
+				"NotInitialized": "Smart Token Routing is not initialized",
+				"RoutinglibUnavailable": "Routinglib is not available",
+				"InvalidParameters": "Invalid parameters provided",
+				"PathfindingFailed": "Pathfinding calculation failed",
+				"TokenNotFound": "Token not found"
+			}
+		},
+		
+		"Help": {
+			"Title": "Smart Token Routing Help",
+			"Description": "This module enhances FoundryVTT v13's token movement system with intelligent pathfinding capabilities.",
+			"Features": {
+				"AutoPathfinding": "Automatic pathfinding when dragging tokens",
+				"ObstacleAvoidance": "Smart navigation around walls and obstacles",
+				"TerrainSupport": "Support for difficult terrain (requires Terrain Ruler)",
+				"Performance": "Optimized for large maps with background processing",
+				"Visualization": "Optional path visualization during movement",
+				"Integration": "Seamless integration with FoundryVTT v13's drag system"
+			},
+			"Requirements": {
+				"Title": "Requirements",
+				"FoundryV13": "FoundryVTT version 13 or higher",
+				"Routinglib": "Routinglib module (automatically installed as dependency)"
+			},
+			"Usage": {
+				"Title": "How to Use",
+				"Step1": "1. Install and enable both Smart Token Routing and Routinglib modules",
+				"Step2": "2. Configure settings in the module settings menu",
+				"Step3": "3. Simply drag tokens as usual - pathfinding happens automatically",
+				"Step4": "4. Enable debug mode to see pathfinding calculations in real-time"
+			}
+		}
+	}
+}

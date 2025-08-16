@@ -1,0 +1,616 @@
+/**
+ * Smart Token Routing - Enhanced Styles for FoundryVTT v13
+ * Real-time path visualization during token drag operations
+ */
+
+/* Path visualization styles for drag operations */
+.routing-token-path {
+    pointer-events: none;
+    z-index: 150;
+}
+
+/* Native FoundryVTT pathfinding paths (green) */
+.routing-token-path-line.native {
+    stroke: #00ff00;
+    stroke-width: 4;
+    stroke-dasharray: 8,4;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.9;
+    animation: routing-path-dash 1.5s linear infinite;
+}
+
+/* Routinglib fallback paths (orange) */
+.routing-token-path-line.routinglib {
+    stroke: #ffaa00;
+    stroke-width: 3;
+    stroke-dasharray: 5,3;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.8;
+    animation: routing-path-dash 1s linear infinite;
+}
+
+/* Direct path when no pathfinding available (red) */
+.routing-token-path-line.direct {
+    stroke: #ff4444;
+    stroke-width: 2;
+    stroke-dasharray: 3,6;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.6;
+    animation: routing-path-dash-slow 2s linear infinite;
+}
+
+/* Real-time drag path visualization */
+.routing-token-drag-path {
+    stroke: #00ff00;
+    stroke-width: 5;
+    stroke-dasharray: 10,5;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 3px #00ff0080);
+    animation: routing-drag-pulse 0.8s ease-in-out infinite alternate;
+}
+
+/* Enhanced waypoint markers */
+.routing-token-waypoint {
+    fill: #00ff00;
+    stroke: #004400;
+    stroke-width: 2;
+    opacity: 0.95;
+}
+
+.routing-token-waypoint.native {
+    fill: #00ff00;
+    stroke: #004400;
+    filter: drop-shadow(0 0 2px #00ff0080);
+}
+
+.routing-token-waypoint.routinglib {
+    fill: #ffaa00;
+    stroke: #884400;
+    filter: drop-shadow(0 0 2px #ffaa0080);
+}
+
+.routing-token-waypoint.start {
+    fill: #0088ff;
+    stroke: #003366;
+    filter: drop-shadow(0 0 3px #0088ff80);
+    animation: routing-waypoint-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.routing-token-waypoint.end {
+    fill: #ff4400;
+    stroke: #662200;
+    filter: drop-shadow(0 0 3px #ff440080);
+    animation: routing-waypoint-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.routing-token-waypoint.intermediate {
+    fill: #ffffff;
+    stroke: #333333;
+    stroke-width: 1;
+    opacity: 0.8;
+}
+
+/* Enhanced path animations */
+@keyframes routing-path-dash {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: 12;
+    }
+}
+
+@keyframes routing-path-dash-slow {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: 9;
+    }
+}
+
+@keyframes routing-drag-pulse {
+    0% {
+        opacity: 0.8;
+        stroke-width: 4;
+    }
+    100% {
+        opacity: 1;
+        stroke-width: 6;
+    }
+}
+
+@keyframes routing-waypoint-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Settings panel enhancements */
+.routing-token-settings {
+    border-left: 3px solid #00aa00;
+    padding-left: 8px;
+}
+
+.routing-token-settings .form-group label {
+    color: #00aa00;
+    font-weight: bold;
+}
+
+/* Debug information overlay */
+.routing-token-debug {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.routing-token-debug h4 {
+    color: #00ff00;
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #004400;
+    padding-bottom: 2px;
+}
+
+.routing-token-debug .debug-item {
+    margin: 2px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.routing-token-debug .debug-label {
+    color: #aaffaa;
+}
+
+.routing-token-debug .debug-value {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Enhanced status indicators */
+.routing-token-status {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 999;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    backdrop-filter: blur(5px);
+}
+
+.routing-token-status.dragging {
+    background: rgba(0, 170, 0, 0.9);
+    border-color: #00ff00;
+    transform: scale(1.05);
+}
+
+.routing-token-status.calculating {
+    background: rgba(255, 170, 0, 0.9);
+    border-color: #ffaa00;
+    animation: routing-status-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.routing-token-status.pathfound {
+    background: rgba(0, 170, 0, 0.9);
+    border-color: #00ff00;
+}
+
+.routing-token-status.nopathfound {
+    background: rgba(255, 68, 68, 0.9);
+    border-color: #ff4444;
+}
+
+.routing-token-status.error {
+    background: rgba(255, 0, 0, 0.9);
+    border-color: #ff0000;
+    animation: routing-error-shake 0.5s ease-in-out 3;
+}
+
+.routing-token-status.disabled {
+    background: rgba(102, 102, 102, 0.8);
+    border-color: #666666;
+}
+
+@keyframes routing-status-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+}
+
+@keyframes routing-error-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+/* Token highlights during drag operations */
+.token.routing-token-dragging {
+    filter: brightness(1.1) saturate(1.3) drop-shadow(0 0 8px #00ff0080);
+    transition: filter 0.2s ease;
+}
+
+.token.routing-token-calculating {
+    filter: brightness(1.05) saturate(1.2) drop-shadow(0 0 6px #ffaa0080);
+    animation: routing-calculate-pulse 1s ease-in-out infinite alternate;
+}
+
+.token.routing-token-pathfound {
+    filter: brightness(1.1) saturate(1.4) drop-shadow(0 0 10px #00ff0090);
+}
+
+.token.routing-token-nopathfound {
+    filter: brightness(1.1) saturate(1.2) drop-shadow(0 0 6px #ff444080);
+}
+
+@keyframes routing-calculate-pulse {
+    0% {
+        filter: brightness(1.05) saturate(1.2) drop-shadow(0 0 4px #ffaa0060);
+    }
+    100% {
+        filter: brightness(1.1) saturate(1.4) drop-shadow(0 0 8px #ffaa00a0);
+    }
+}
+
+/* Path cost display */
+.routing-token-cost {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 101;
+    transform: translate(-50%, -100%);
+    margin-top: -5px;
+}
+
+.routing-token-cost::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -3px;
+    width: 0;
+    height: 0;
+    border-top: 3px solid rgba(0, 0, 0, 0.8);
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+}
+
+/* Real-time drag feedback */
+.routing-token-drag-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px 25px;
+    border-radius: 10px;
+    color: #00ff00;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 1001;
+    border: 2px solid #00ff00;
+    backdrop-filter: blur(10px);
+    animation: routing-drag-overlay-appear 0.3s ease;
+}
+
+@keyframes routing-drag-overlay-appear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Path type indicators */
+.routing-token-path-type {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    z-index: 101;
+    white-space: nowrap;
+}
+
+.routing-token-path-type.native {
+    background: rgba(0, 255, 0, 0.8);
+    color: #000;
+}
+
+.routing-token-path-type.routinglib {
+    background: rgba(255, 170, 0, 0.8);
+    color: #000;
+}
+
+.routing-token-path-type.direct {
+    background: rgba(255, 68, 68, 0.8);
+    color: #fff;
+}
+
+/* Settings form styling */
+.routing-token-settings-form {
+    background: rgba(0, 170, 0, 0.05);
+    border: 1px solid rgba(0, 170, 0, 0.2);
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.routing-token-settings-form .form-group {
+    margin-bottom: 8px;
+}
+
+.routing-token-settings-form input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.routing-token-settings-form input[type="range"] {
+    width: 100%;
+}
+
+/* Notification styling */
+.notification.routing-token {
+    border-left: 4px solid #00aa00;
+}
+
+.notification.routing-token.error {
+    border-left-color: #aa0000;
+}
+
+.notification.routing-token.warning {
+    border-left-color: #aaaa00;
+}
+
+/* Integration with other modules */
+.drag-ruler.routing-token-enhanced .ruler-segment {
+    stroke-width: 4;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 2px currentColor);
+}
+
+.drag-ruler.routing-token-enhanced .ruler-waypoint {
+    r: 5;
+    fill: #00ff00;
+    stroke: #004400;
+    filter: drop-shadow(0 0 2px #00ff0080);
+}
+
+/* Enhanced compatibility with core FoundryVTT ruler */
+.ruler.routing-token-enhanced {
+    opacity: 0.9;
+}
+
+.ruler.routing-token-enhanced .ruler-segment {
+    stroke-width: 5;
+    filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* Token movement preview integration */
+.token.preview.routing-token-preview {
+    opacity: 0.7;
+    filter: brightness(1.2) drop-shadow(0 0 8px #00ff0080);
+    animation: routing-preview-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes routing-preview-pulse {
+    0% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+/* Enhanced dark theme support */
+.dark .routing-token-debug {
+    background: rgba(15, 15, 15, 0.98);
+    border: 1px solid #004400;
+    backdrop-filter: blur(8px);
+}
+
+.dark .routing-token-settings-form {
+    background: rgba(0, 170, 0, 0.12);
+    border-color: rgba(0, 170, 0, 0.35);
+}
+
+.dark .routing-token-status {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+.dark .routing-token-drag-overlay {
+    background: rgba(10, 10, 10, 0.98);
+    border-color: #00ff00;
+}
+
+/* Light theme adjustments */
+.light .routing-token-status {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border-color: #ccc;
+}
+
+.light .routing-token-status.dragging {
+    background: rgba(0, 170, 0, 0.9);
+    color: white;
+}
+
+.light .routing-token-debug {
+    background: rgba(248, 248, 248, 0.98);
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.light .routing-token-debug .debug-value {
+    color: #000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .routing-token-debug {
+        font-size: 10px;
+        max-width: 200px;
+    }
+    
+    .routing-token-status {
+        font-size: 11px;
+        padding: 6px 12px;
+    }
+    
+    .routing-token-drag-path {
+        stroke-width: 4;
+    }
+    
+    .routing-token-path-line.native {
+        stroke-width: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .routing-token-status {
+        font-size: 10px;
+        padding: 4px 10px;
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .routing-token-drag-overlay {
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .routing-token-drag-path {
+        stroke-width: 6;
+        stroke: #00ff00;
+        opacity: 1;
+    }
+    
+    .routing-token-waypoint {
+        stroke-width: 3;
+        opacity: 1;
+    }
+    
+    .routing-token-status {
+        border: 3px solid currentColor;
+        background: rgba(0, 0, 0, 1) !important;
+    }
+    
+    .token.routing-token-dragging {
+        filter: brightness(1.3) saturate(1.5) drop-shadow(0 0 12px #00ff00);
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .routing-token-drag-path,
+    .routing-token-path-line.native,
+    .routing-token-path-line.routinglib,
+    .routing-token-path-line.direct {
+        animation: none;
+    }
+    
+    .routing-token-waypoint.start,
+    .routing-token-waypoint.end {
+        animation: none;
+    }
+    
+    .routing-token-status.calculating {
+        animation: none;
+    }
+    
+    .token.routing-token-calculating {
+        animation: none;
+    }
+}
+
+/* Performance optimizations */
+.routing-token-path-line,
+.routing-token-drag-path {
+    will-change: stroke-dashoffset;
+}
+
+.routing-token-waypoint {
+    will-change: transform;
+}
+
+.token.routing-token-dragging,
+.token.routing-token-calculating {
+    will-change: filter;
+}
+
+/* GPU acceleration for smooth animations */
+.routing-token-status,
+.routing-token-drag-overlay {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+/* Smooth transitions */
+.token {
+    transition: filter 0.2s ease-out;
+}
+
+.routing-token-status {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Print media - hide interactive elements */
+@media print {
+    .routing-token-status,
+    .routing-token-debug,
+    .routing-token-drag-overlay,
+    .routing-token-path-type {
+        display: none !important;
+    }
+    
+    .routing-token-drag-path,
+    .routing-token-path-line {
+        animation: none;
+        stroke-dasharray: none;
+        opacity: 0.7;
+    }
+}

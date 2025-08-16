@@ -1,0 +1,194 @@
+foundry.mjs:121882 Foundry VTT | Activating pending audio playback with user gesture.
+main.js:634 [routing-token] Token Anastasios Georgiou selected for pathfinding
+main.js:177 [routing-token] 🎯 Drag started for Anastasios Georgiou at (50, 50)
+index.js:2110  The Super Power Companion super strength does not support metric
+(anonymous) @ index.js:2110
+#call @ foundry.mjs:23791
+callAll @ foundry.mjs:23750
+prepareDerivedData @ SwadeActor.ts:268
+prepareData @ foundry.mjs:32554
+prepareData @ foundry.mjs:41508
+_safePrepareData @ foundry.mjs:32513
+_initialize @ foundry.mjs:32345
+DataModel @ foundry.mjs:11390
+Document @ foundry.mjs:11975
+BaseActor @ foundry.mjs:14164
+ClientDocumentMixin @ foundry.mjs:32309
+Actor @ foundry.mjs:41153
+SwadeActor @ SwadeActor.ts:133
+applyDelta @ foundry.mjs:13459
+apply @ foundry.mjs:48580
+_createSyntheticActor @ foundry.mjs:48643
+_configure @ foundry.mjs:48538
+DataModel @ foundry.mjs:11384
+Document @ foundry.mjs:11975
+BaseActorDelta @ foundry.mjs:13367
+ClientDocumentMixin @ foundry.mjs:32309
+ActorDelta @ foundry.mjs:48534
+(anonymous) @ foundry.mjs:23059
+clone @ foundry.mjs:22258
+clone @ foundry.mjs:82342
+clone @ foundry.mjs:139191
+_initializeDragLeft @ foundry.mjs:82876
+_initializeDragLeft @ foundry.mjs:143161
+#onDragLeftStart @ foundry.mjs:82849
+callback @ foundry.mjs:81066
+#handleDragStart @ foundry.mjs:81420
+#handlePointerMove @ foundry.mjs:81398
+notifyListeners @ EventBoundary.ts:1464
+notifyTarget @ EventBoundary.ts:658
+propagate @ EventBoundary.ts:310
+dispatchEvent @ EventBoundary.ts:210
+mapPointerMove @ EventBoundary.ts:815
+mapEvent @ EventBoundary.ts:231
+onPointerMove @ EventSystem.ts:396
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (120.09255971018229, 90.35844528525172)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (130.539575263095, 97.82059925161798)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (132.03200605636835, 99.3130300448911)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (135.0168676429148, 100.80546083816444)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (135.0168676429148, 102.29789163143778)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (136.50929843618815, 102.29789163143778)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (136.50929843618815, 103.7903224247109)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (138.00172922946126, 103.7903224247109)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (138.00172922946126, 105.28275321798424)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (139.4941600227346, 105.28275321798424)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (139.4941600227346, 106.77518401125735)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (139.4941600227346, 106.77518401125735)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (140.98659081600772, 106.77518401125735)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (140.98659081600772, 108.2676148045307)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (142.47902160928106, 108.2676148045307)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (142.47902160928106, 109.76004559780404)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (143.9714524025544, 109.76004559780404)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (145.46388319582752, 111.25247639107715)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (146.95631398910086, 112.7449071843505)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (146.95631398910086, 112.7449071843505)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (146.95631398910086, 114.23733797762361)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (148.44874478237398, 114.23733797762361)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (148.44874478237398, 115.72976877089695)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (149.94117557564732, 115.72976877089695)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (149.94117557564732, 117.2221995641703)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (151.43360636892066, 117.2221995641703)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (151.43360636892066, 118.71463035744341)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (152.92603716219378, 118.71463035744341)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (152.92603716219378, 120.20706115071675)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (152.92603716219378, 121.69949194398987)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (154.41846795546712, 121.69949194398987)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (154.41846795546712, 123.19192273726321)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (155.91089874874046, 123.19192273726321)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (157.40332954201358, 123.19192273726321)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (157.40332954201358, 124.68435353053655)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (158.89576033528692, 124.68435353053655)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (160.38819112856004, 124.68435353053655)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (160.38819112856004, 126.17678432380967)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (161.88062192183338, 127.66921511708301)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (163.37305271510672, 129.16164591035636)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (163.37305271510672, 130.65407670362947)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (164.86548350837984, 130.65407670362947)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (166.35791430165318, 130.65407670362947)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (166.35791430165318, 132.1465074969028)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (166.35791430165318, 133.63893829017593)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (167.8503450949263, 133.63893829017593)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (167.8503450949263, 135.13136908344927)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (169.34277588819964, 135.13136908344927)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (170.83520668147298, 136.62379987672261)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (172.3276374747461, 136.62379987672261)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (172.3276374747461, 138.11623066999573)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (173.82006826801944, 139.60866146326907)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (175.31249906129256, 139.60866146326907)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (175.31249906129256, 141.1010922565422)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (176.8049298545659, 141.1010922565422)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (178.29736064783924, 142.59352304981553)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (179.78979144111236, 142.59352304981553)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (179.78979144111236, 144.08595384308887)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (179.78979144111236, 145.578384636362)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (181.2822222343857, 145.578384636362)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (181.2822222343857, 147.07081542963533)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (182.77465302765904, 147.07081542963533)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (184.26708382093216, 148.56324622290867)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (184.26708382093216, 150.0556770161818)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (185.7595146142055, 151.54810780945513)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (187.25194540747862, 153.04053860272825)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (187.25194540747862, 154.5329693960016)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (188.74437620075196, 154.5329693960016)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (190.2368069940253, 154.5329693960016)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (190.2368069940253, 156.02540018927493)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (191.72923778729842, 157.51783098254805)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (191.72923778729842, 159.0102617758214)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (193.22166858057176, 159.0102617758214)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (193.22166858057176, 160.5026925690945)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (194.71409937384487, 161.99512336236785)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (196.20653016711822, 161.99512336236785)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (196.20653016711822, 163.4875541556412)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (197.69896096039156, 164.9799849489143)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (197.69896096039156, 166.47241574218765)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (199.19139175366467, 166.47241574218765)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (199.19139175366467, 167.96484653546077)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (200.68382254693802, 167.96484653546077)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (202.17625334021136, 169.4572773287341)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (202.17625334021136, 170.94970812200745)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (203.66868413348448, 172.44213891528057)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (205.16111492675782, 173.9345697085539)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (206.65354572003093, 175.42700050182725)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (206.65354572003093, 176.91943129510037)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (208.14597651330428, 176.91943129510037)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (208.14597651330428, 178.4118620883737)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (209.63840730657762, 178.4118620883737)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (209.63840730657762, 179.90429288164682)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (211.13083809985073, 179.90429288164682)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (211.13083809985073, 181.39672367492017)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (212.62326889312408, 182.8891544681935)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (212.62326889312408, 184.38158526146663)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (214.1156996863972, 184.38158526146663)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (215.60813047967054, 184.38158526146663)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (215.60813047967054, 185.87401605473997)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (215.60813047967054, 185.87401605473997)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (217.10056127294388, 185.87401605473997)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (217.10056127294388, 187.36644684801308)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (217.10056127294388, 188.85887764128643)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (218.592992066217, 188.85887764128643)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (218.592992066217, 190.35130843455977)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (220.08542285949034, 190.35130843455977)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (221.57785365276345, 191.84373922783288)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (221.57785365276345, 193.33617002110623)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (223.0702844460368, 193.33617002110623)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (223.0702844460368, 194.82860081437957)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (224.56271523931014, 194.82860081437957)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (224.56271523931014, 196.32103160765269)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (224.56271523931014, 197.81346240092603)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (226.05514603258325, 197.81346240092603)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (227.5475768258566, 197.81346240092603)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (227.5475768258566, 199.30589319419914)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (229.04000761912994, 199.30589319419914)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (229.04000761912994, 200.7983239874725)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (229.04000761912994, 202.29075478074583)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (230.53243841240305, 202.29075478074583)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (230.53243841240305, 203.78318557401894)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (232.0248692056764, 203.78318557401894)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (233.5172999989495, 205.2756163672923)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (233.5172999989495, 205.2756163672923)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (233.5172999989495, 206.7680471605654)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (235.00973079222285, 206.7680471605654)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (235.00973079222285, 208.26047795383874)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (236.5021615854962, 208.26047795383874)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (236.5021615854962, 209.7529087471121)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (237.9945923787693, 209.7529087471121)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (239.48702317204265, 209.7529087471121)
+main.js:199 [routing-token] 🖱️ Drag move for Anastasios Georgiou to (239.48702317204265, 211.2453395403852)
+main.js:351  [routing-token] Drag pathfinding error: Error: RoutingLib coordinate helper not available. Make sure routinglib is loaded.
+    at SmartTokenRouting.getCoordinateHelper (main.js:689:15)
+    at SmartTokenRouting.pixelsToGridPosition (main.js:696:21)
+    at SmartTokenRouting.calculateDragPathfinding (main.js:298:38)
+    at main.js:210:22
+calculateDragPathfinding @ main.js:351
+(anonymous) @ main.js:210
+setTimeout
+onCanvasPointerMove @ main.js:209
+(anonymous) @ main.js:154
+notifyListeners @ EventBoundary.ts:1464
+notifyTarget @ EventBoundary.ts:658
+propagate @ EventBoundary.ts:310
+dispatchEvent @ EventBoundary.ts:210
+mapPointerMove @ EventBoundary.ts:815
+mapEvent @ EventBoundary.ts:231
+onPointerMove @ EventSystem.ts:396
+main.js:231 [routing-token] 🎯 Drag completed for Anastasios Georgiou

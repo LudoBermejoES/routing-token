@@ -1,0 +1,91 @@
+{
+	"ROUTING_TOKEN": {
+		"ModuleName": "Enrutamiento Inteligente de Fichas",
+		"ModuleDescription": "Mejora el movimiento de fichas con búsqueda de rutas inteligente",
+		
+		"Settings": {
+			"EnablePathfinding": "Activar Búsqueda Inteligente de Rutas",
+			"EnablePathfindingHint": "Calcula automáticamente rutas óptimas alrededor de muros y obstáculos al mover fichas",
+			
+			"VisualizePath": "Visualizar Rutas Calculadas",
+			"VisualizePathHint": "Mostrar la ruta calculada en el lienzo durante el movimiento de fichas",
+			
+			"MaxPathDistance": "Distancia Máxima de Ruta",
+			"MaxPathDistanceHint": "Distancia máxima (en unidades de cuadrícula) para los cálculos de rutas. Valores más altos pueden afectar el rendimiento.",
+			
+			"DebugMode": "Activar Modo Depuración",
+			"DebugModeHint": "Mostrar información detallada de búsqueda de rutas en la consola y superposiciones en pantalla"
+		},
+		
+		"Notifications": {
+			"ModuleReady": "Enrutamiento Inteligente de Fichas está listo y la búsqueda de rutas está activada",
+			"RoutinglibNotFound": "Módulo Routinglib no encontrado - la búsqueda de rutas será desactivada",
+			"RoutinglibReady": "Routinglib está ahora disponible - búsqueda de rutas activada",
+			"PathfindingEnabled": "Búsqueda inteligente de rutas activada",
+			"PathfindingDisabled": "Búsqueda inteligente de rutas desactivada",
+			"PathCalculated": "Ruta óptima calculada con {waypoints} puntos de ruta",
+			"PathCalculationFailed": "No se pudo calcular la ruta óptima - usando movimiento directo",
+			"PathTooLong": "La ruta excede el límite de distancia máxima",
+			"PathfindingError": "Error en el cálculo de rutas: {error}"
+		},
+		
+		"UI": {
+			"Status": {
+				"Ready": "Enrutamiento Listo",
+				"Calculating": "Calculando Ruta...",
+				"Active": "Búsqueda de Rutas Activa",
+				"Disabled": "Búsqueda de Rutas Desactivada",
+				"Error": "Error de Búsqueda de Rutas",
+				"NoRoute": "No se Encontró Ruta"
+			},
+			
+			"Debug": {
+				"Title": "Depuración Enrutamiento",
+				"Status": "Estado",
+				"LastPath": "Última Ruta",
+				"Waypoints": "Puntos de Ruta",
+				"Distance": "Distancia",
+				"Cost": "Coste",
+				"Time": "Tiempo Cálculo",
+				"ActiveJobs": "Trabajos Activos"
+			},
+			
+			"PathCost": "{distance} unidades"
+		},
+		
+		"API": {
+			"Errors": {
+				"NotInitialized": "Enrutamiento Inteligente de Fichas no está inicializado",
+				"RoutinglibUnavailable": "Routinglib no está disponible",
+				"InvalidParameters": "Parámetros inválidos proporcionados",
+				"PathfindingFailed": "El cálculo de rutas falló",
+				"TokenNotFound": "Ficha no encontrada"
+			}
+		},
+		
+		"Help": {
+			"Title": "Ayuda de Enrutamiento Inteligente de Fichas",
+			"Description": "Este módulo mejora el sistema de movimiento de fichas de FoundryVTT v13 con capacidades inteligentes de búsqueda de rutas.",
+			"Features": {
+				"AutoPathfinding": "Búsqueda automática de rutas al arrastrar fichas",
+				"ObstacleAvoidance": "Navegación inteligente alrededor de muros y obstáculos",
+				"TerrainSupport": "Soporte para terreno difícil (requiere Terrain Ruler)",
+				"Performance": "Optimizado para mapas grandes con procesamiento en segundo plano",
+				"Visualization": "Visualización opcional de rutas durante el movimiento",
+				"Integration": "Integración perfecta con el sistema de arrastre de FoundryVTT v13"
+			},
+			"Requirements": {
+				"Title": "Requisitos",
+				"FoundryV13": "FoundryVTT versión 13 o superior",
+				"Routinglib": "Módulo Routinglib (instalado automáticamente como dependencia)"
+			},
+			"Usage": {
+				"Title": "Cómo Usar",
+				"Step1": "1. Instala y activa ambos módulos: Enrutamiento Inteligente de Fichas y Routinglib",
+				"Step2": "2. Configura los ajustes en el menú de configuración del módulo",
+				"Step3": "3. Simplemente arrastra las fichas como de costumbre - la búsqueda de rutas ocurre automáticamente",
+				"Step4": "4. Activa el modo depuración para ver los cálculos de rutas en tiempo real"
+			}
+		}
+	}
+}

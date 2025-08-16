@@ -1,0 +1,53 @@
+{
+	"id": "routing-token",
+	"title": "Smart Token Routing",
+	"description": "Enhances FoundryVTT v13 token movement with intelligent pathfinding using routinglib. Automatically calculates optimal paths around walls and obstacles during token drag operations.",
+	"version": "1.0.3",
+	"compatibility": {
+		"minimum": "13",
+		"verified": "13"
+	},
+	"authors": [
+		{
+			"name": "Ludo Bermejo",
+			"email": "ludobermejo@gmail.com"
+		}
+	],
+	"esmodules": ["scripts/main.js"],
+	"styles": ["styles/routing-token.css"],
+	"languages": [
+		{
+			"lang": "en",
+			"name": "English",
+			"path": "lang/en.json"
+		},
+		{
+			"lang": "es",
+			"name": "Español",
+			"path": "lang/es.json"
+		}
+	],
+	"dependencies": [
+		{
+			"name": "routinglib",
+			"type": "module"
+		}
+	],
+	"relationships": {
+		"requires": [
+			{
+				"id": "routinglib",
+				"type": "module",
+				"compatibility": {
+					"minimum": "1.1.0"
+				}
+			}
+		]
+	},
+	"url": "https://github.com/ludobermejo/routing-token",
+	"manifest": "https://github.com/ludobermejo/routing-token/releases/latest/download/module.json",
+	"download": "https://github.com/ludobermejo/routing-token/releases/latest/download/routing-token.zip",
+	"readme": "https://github.com/ludobermejo/routing-token/blob/main/README.md",
+	"bugs": "https://github.com/ludobermejo/routing-token/issues",
+	"changelog": "https://github.com/ludobermejo/routing-token/blob/main/CHANGELOG.md"
+}
