@@ -13,7 +13,6 @@ class SmartTokenRouting {
         this.enabled = true;
         this.routinglibReady = false;
         this.activePathfindingJobs = new Map();
-        this.pathRenderer = null;
         this.dragState = new Map(); // Track drag operations per token
         this.pathfindingTimeouts = new Map(); // Track debounced pathfinding timers
         
@@ -53,14 +52,6 @@ class SmartTokenRouting {
             }
         });
 
-        game.settings.register(MODULE_NAME, "visualizePath", {
-            name: game.i18n.localize("ROUTING_TOKEN.Settings.VisualizePath"),
-            hint: game.i18n.localize("ROUTING_TOKEN.Settings.VisualizePathHint"),
-            scope: "client",
-            config: true,
-            type: Boolean,
-            default: true
-        });
 
         game.settings.register(MODULE_NAME, "maxPathDistance", {
             name: game.i18n.localize("ROUTING_TOKEN.Settings.MaxPathDistance"),
@@ -208,8 +199,6 @@ class SmartTokenRouting {
             // Clear any existing pathfinding timeout
             this.clearPathfindingTimeout(tokenId);
             
-            // Clear current path visualization
-            this.clearPathVisualization(tokenId);
             
             // Set new timeout for pathfinding calculation
             const timeoutId = setTimeout(() => {
@@ -265,12 +254,6 @@ class SmartTokenRouting {
         // Only handle if this is NOT from our waypoint movement
         if (options?.routing_token_movement) return;
         
-        // Clear any visualization after completed movement
-        if (change.x !== undefined || change.y !== undefined) {
-            setTimeout(() => {
-                this.clearPathVisualization(tokenDoc.id);
-            }, 2000);
-        }
     }
     
     /**
@@ -352,15 +335,8 @@ class SmartTokenRouting {
                     dragInfo.currentPath = pixelPath;
                 }
                 
-                // Show path visualization
-                const pathType = result.path.length > 2 ? 'pathfinding' : 'direct';
-                this.displayPath(token.id, pixelPath, pathType);
                 
             } else {
-                // Show direct path
-                const directPath = [startPos, targetPos];
-                this.displayPath(token.id, directPath, 'direct');
-                
                 // Store direct path
                 const dragInfo = this.dragState.get(token.id);
                 if (dragInfo) {
@@ -443,10 +419,6 @@ class SmartTokenRouting {
             // Clear animation flag
             this.animatingTokens.delete(token.id);
             
-            // Clear path visualization after movement completes
-            setTimeout(() => {
-                this.clearPathVisualization(token.id);
-            }, 1000);
         }
     }
     
@@ -470,8 +442,6 @@ class SmartTokenRouting {
                 this.activePathfindingJobs.delete(token.id);
             }
             
-            // Initialize path renderer
-            this.initializePathRenderer();
             
             // Create waypoints for native pathfinding
             const waypoints = [
@@ -492,10 +462,6 @@ class SmartTokenRouting {
             
             await this.tryRoutinglibFallback(token, fromPos, toPos);
             
-            // Clear path after a short delay
-            setTimeout(() => {
-                this.clearPathVisualization(token.id);
-            }, 2000);
             
         } catch (error) {
             if (game.settings.get(MODULE_NAME, "debugMode")) {
@@ -514,8 +480,6 @@ class SmartTokenRouting {
      */
     async tryRoutinglibFallback(token, fromPos, toPos) {
         if (!this.routinglibReady || !window.routinglib) {
-            // Show direct line if no pathfinding available
-            this.displayDirectPath(token.id, fromPos, toPos);
             return;
         }
         
@@ -529,122 +493,17 @@ class SmartTokenRouting {
             });
             
             if (result && result.path && result.path.length > 1) {
-                // Convert grid coordinates back to pixel coordinates using token data
-                const pixelPath = result.path.map(point => this.gridToPixelPosition(point, tokenData));
-                this.displayPath(token.id, pixelPath, 'routinglib');
-                
                 if (game.settings.get(MODULE_NAME, "debugMode")) {
                     console.log(`[${MODULE_NAME}] Routinglib fallback found ${result.path.length} waypoints`);
                 }
-            } else {
-                this.displayDirectPath(token.id, fromPos, toPos);
             }
         } catch (error) {
             if (game.settings.get(MODULE_NAME, "debugMode")) {
                 console.warn(`[${MODULE_NAME}] Routinglib fallback failed:`, error);
             }
-            this.displayDirectPath(token.id, fromPos, toPos);
         }
     }
 
-    /**
-     * Initialize the path renderer for visualization
-     */
-    initializePathRenderer() {
-        if (this.pathRenderer) return;
-        
-        this.pathRenderer = new PIXI.Container();
-        this.pathRenderer.name = "SmartRoutingPaths";
-        canvas.stage.addChild(this.pathRenderer);
-        
-        if (game.settings.get(MODULE_NAME, "debugMode")) {
-            console.log(`[${MODULE_NAME}] Path renderer initialized`);
-        }
-    }
-    
-    /**
-     * Display calculated path on canvas
-     */
-    displayPath(tokenId, waypoints, source = 'native') {
-        if (!game.settings.get(MODULE_NAME, "visualizePath")) return;
-        
-        this.clearPathVisualization(tokenId);
-        
-        if (!this.pathRenderer || !waypoints || waypoints.length < 2) return;
-        
-        const pathGraphics = new PIXI.Graphics();
-        pathGraphics.name = `path-${tokenId}`;
-        
-        // Set line style based on source
-        const lineColor = source === 'pathfinding' ? 0x00FF00 : (source === 'direct' ? 0xFF0000 : 0xFFAA00);
-        const lineWidth = source === 'direct' ? 2 : 3;
-        const alpha = source === 'direct' ? 0.6 : 0.8;
-        
-        pathGraphics.lineStyle(lineWidth, lineColor, alpha);
-        
-        // Draw the path
-        const firstPoint = this.waypointToCanvas(waypoints[0]);
-        pathGraphics.moveTo(firstPoint.x, firstPoint.y);
-        
-        for (let i = 1; i < waypoints.length; i++) {
-            const point = this.waypointToCanvas(waypoints[i]);
-            pathGraphics.lineTo(point.x, point.y);
-        }
-        
-        // Add waypoint markers
-        waypoints.forEach((waypoint, index) => {
-            const point = this.waypointToCanvas(waypoint);
-            const isStart = index === 0;
-            const isEnd = index === waypoints.length - 1;
-            
-            const markerColor = isStart ? 0x0088FF : (isEnd ? 0xFF4400 : lineColor);
-            const markerSize = isStart || isEnd ? 6 : 4;
-            
-            pathGraphics.beginFill(markerColor, 0.9);
-            pathGraphics.drawCircle(point.x, point.y, markerSize);
-            pathGraphics.endFill();
-        });
-        
-        this.pathRenderer.addChild(pathGraphics);
-    }
-    
-    /**
-     * Display direct path when pathfinding fails
-     */
-    displayDirectPath(tokenId, startPos, endPos) {
-        if (!game.settings.get(MODULE_NAME, "visualizePath")) return;
-        
-        this.clearPathVisualization(tokenId);
-        
-        if (!this.pathRenderer) return;
-        
-        const pathGraphics = new PIXI.Graphics();
-        pathGraphics.name = `path-${tokenId}`;
-        
-        // Red dashed line for direct path
-        pathGraphics.lineStyle(2, 0xFF0000, 0.6);
-        
-        const start = this.tokenToCanvasPosition(startPos);
-        const end = this.tokenToCanvasPosition(endPos);
-        
-        pathGraphics.moveTo(start.x, start.y);
-        pathGraphics.lineTo(end.x, end.y);
-        
-        this.pathRenderer.addChild(pathGraphics);
-    }
-    
-    /**
-     * Clear path visualization for a token
-     */
-    clearPathVisualization(tokenId) {
-        if (!this.pathRenderer) return;
-        
-        const existingPath = this.pathRenderer.getChildByName(`path-${tokenId}`);
-        if (existingPath) {
-            this.pathRenderer.removeChild(existingPath);
-            existingPath.destroy();
-        }
-    }
 
     /**
      * Handle token control changes
@@ -685,11 +544,6 @@ class SmartTokenRouting {
         this.pathfindingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
         this.pathfindingTimeouts.clear();
         
-        // Cleanup path renderer
-        if (this.pathRenderer) {
-            this.pathRenderer.destroy({ children: true });
-            this.pathRenderer = null;
-        }
 
         if (game.settings.get(MODULE_NAME, "debugMode")) {
             console.log(`[${MODULE_NAME}] Canvas cleanup completed`);
@@ -709,72 +563,8 @@ class SmartTokenRouting {
             return window.routinglib.coordinateHelper;
         }
         
-        // If routinglib helper is not available, log warning and use fallback
-        if (game.settings.get(MODULE_NAME, "debugMode")) {
-            console.warn(`[${MODULE_NAME}] RoutingLib coordinate helper not available, using fallback methods`);
-        }
-        
-        // Return fallback coordinate helper with same interface
-        return this.getFallbackCoordinateHelper();
-    }
-
-    /**
-     * Fallback coordinate helper when routinglib is not available
-     * Uses the same algorithms but implemented locally
-     */
-    getFallbackCoordinateHelper() {
-        return {
-            pixelToGridBounded: (pixelPos, tokenData = null) => {
-                if (canvas.grid.type === CONST.GRID_TYPES.GRIDLESS) {
-                    return { x: pixelPos.x, y: pixelPos.y };
-                }
-                
-                // Use standard 1x1 conversion (fallback doesn't support token-aware calculations)
-                const gridX = Math.round((pixelPos.x - canvas.grid.size / 2) / canvas.grid.size);
-                const gridY = Math.round((pixelPos.y - canvas.grid.size / 2) / canvas.grid.size);
-                
-                return {
-                    x: Math.max(0, gridX),
-                    y: Math.max(0, gridY)
-                };
-            },
-            
-            gridPosToPixel: (gridPos, tokenData = null) => {
-                if (canvas.grid.type === CONST.GRID_TYPES.GRIDLESS) {
-                    return { x: gridPos.x, y: gridPos.y };
-                }
-                
-                // Use standard 1x1 conversion (fallback doesn't support token-aware calculations)
-                const pixelX = gridPos.x * canvas.grid.size + canvas.grid.size / 2;
-                const pixelY = gridPos.y * canvas.grid.size + canvas.grid.size / 2;
-                return { x: pixelX, y: pixelY };
-            },
-            
-            getTokenData: (token) => {
-                if (!token) return { width: 1, height: 1 };
-                const doc = token.document || token;
-                return {
-                    width: doc.width || 1,
-                    height: doc.height || 1
-                };
-            },
-            
-            waypointToCanvas: (waypoint) => {
-                if (waypoint.x !== undefined && waypoint.y !== undefined) {
-                    return { x: waypoint.x, y: waypoint.y };
-                }
-                return { x: waypoint.x || 0, y: waypoint.y || 0 };
-            },
-            
-            tokenToCanvasPosition: (tokenPos) => {
-                return {
-                    x: tokenPos.x || 0,
-                    y: tokenPos.y || 0
-                };
-            },
-            
-            setDebugEnabled: () => {} // No-op for fallback
-        };
+        // If routinglib helper is not available, throw error
+        throw new Error("RoutingLib coordinate helper not available. Make sure routinglib is loaded.");
     }
 
     /**
@@ -820,8 +610,6 @@ class SmartTokenRouting {
             this.activePathfindingJobs.delete(tokenId);
         }
         
-        // Clear visual path
-        this.clearPathVisualization(tokenId);
     }
 
     /**
