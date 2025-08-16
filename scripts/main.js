@@ -116,8 +116,6 @@ class SmartTokenRouting {
         // Cleanup on canvas teardown
         Hooks.on("canvasInit", this.onCanvasInit.bind(this));
         
-        // Final position update for waypoint execution
-        Hooks.on("updateToken", this.onFinalTokenUpdate.bind(this));
     }
 
     /**
@@ -248,25 +246,9 @@ class SmartTokenRouting {
     }
     
     /**
-     * Handle final token update (for non-pathfinding movements)
-     */
-    async onFinalTokenUpdate(tokenDoc, change, options, userId) {
-        // Only handle if this is NOT from our waypoint movement
-        if (options?.routing_token_movement) return;
-        
-    }
-    
-    /**
      * Track tokens currently animating through waypoints
      */
     animatingTokens = new Set();
-    
-    /**
-     * Check if a token is currently animating through waypoints
-     */
-    isAnimatingWaypoints(tokenId) {
-        return this.animatingTokens.has(tokenId);
-    }
     
     /**
      * Calculate pathfinding during drag operation
@@ -313,6 +295,8 @@ class SmartTokenRouting {
                 token: token,
                 maxDistance: game.settings.get(MODULE_NAME, "maxPathDistance")
             });
+
+            console.log(result);
             
             if (result && result.path && result.path.length > 1) {
                 if (game.settings.get(MODULE_NAME, "debugMode")) {
@@ -337,10 +321,37 @@ class SmartTokenRouting {
                 
                 
             } else {
-                // Store direct path
-                const dragInfo = this.dragState.get(token.id);
-                if (dragInfo) {
-                    dragInfo.currentPath = null; // No complex path needed
+                // Create a simple direct path from origin to destination (like FoundryVTT default)
+                // Normalize coordinates through grid system to ensure valid grid-aligned positions
+                try {
+                    const startGrid = this.pixelsToGridPosition(startPos, tokenData);
+                    const targetGrid = this.pixelsToGridPosition(targetPos, tokenData);
+                    
+                    const normalizedStartPos = this.gridToPixelPosition(startGrid, tokenData);
+                    const normalizedTargetPos = this.gridToPixelPosition(targetGrid, tokenData);
+                    
+                    const directPath = [normalizedStartPos, normalizedTargetPos];
+                    
+                    if (game.settings.get(MODULE_NAME, "debugMode")) {
+                        console.log(`[${MODULE_NAME}] 🎯 No complex path found, using normalized direct path:`);
+                        console.log(`[${MODULE_NAME}]   Original: (${Math.round(startPos.x)},${Math.round(startPos.y)}) → (${Math.round(targetPos.x)},${Math.round(targetPos.y)})`);
+                        console.log(`[${MODULE_NAME}]   Grid: (${startGrid.x},${startGrid.y}) → (${targetGrid.x},${targetGrid.y})`);
+                        console.log(`[${MODULE_NAME}]   Normalized: (${Math.round(normalizedStartPos.x)},${Math.round(normalizedStartPos.y)}) → (${Math.round(normalizedTargetPos.x)},${Math.round(normalizedTargetPos.y)})`);
+                    }
+                    
+                    const dragInfo = this.dragState.get(token.id);
+                    if (dragInfo) {
+                        dragInfo.currentPath = directPath;
+                    }
+                } catch (normalizeError) {
+                    if (game.settings.get(MODULE_NAME, "debugMode")) {
+                        console.warn(`[${MODULE_NAME}] Failed to normalize direct path coordinates:`, normalizeError);
+                    }
+                    // Fallback to original coordinates if normalization fails
+                    const dragInfo = this.dragState.get(token.id);
+                    if (dragInfo) {
+                        dragInfo.currentPath = [startPos, targetPos];
+                    }
                 }
             }
             
@@ -422,13 +433,6 @@ class SmartTokenRouting {
         }
     }
     
-    /**
-     * Handle canvas pan events (might indicate dragging)
-     */
-    onCanvasPan(canvas, position) {
-        // This could be used to detect if we're in a drag operation
-        // For now, we'll rely on updateToken for movement detection
-    }
 
 
     /**
@@ -507,43 +511,9 @@ class SmartTokenRouting {
         return this.getCoordinateHelper().gridPosToPixel(gridPos, tokenData);
     }
     
-    /**
-     * Convert waypoint to canvas coordinates for display using centralized helper
-     */
-    waypointToCanvas(waypoint) {
-        return this.getCoordinateHelper().waypointToCanvas(waypoint);
-    }
     
-    /**
-     * Convert token position to canvas position using centralized helper
-     */
-    tokenToCanvasPosition(tokenPos) {
-        return this.getCoordinateHelper().tokenToCanvasPosition(tokenPos);
-    }
     
-    /**
-     * Cleanup pathfinding operations for a token
-     */
-    cleanupPathfindingForToken(tokenId) {
-        // Cancel any active pathfinding job
-        const job = this.activePathfindingJobs.get(tokenId);
-        if (job) {
-            try {
-                job.cancel();
-            } catch (error) {
-                console.warn(`[${MODULE_NAME}] Error canceling pathfinding job:`, error);
-            }
-            this.activePathfindingJobs.delete(tokenId);
-        }
-        
-    }
 
-    /**
-     * Get token position in appropriate coordinate system
-     */
-    getTokenPosition(tokenDoc) {
-        return { x: tokenDoc.x, y: tokenDoc.y };
-    }
 
     /**
      * Public API for other modules
