@@ -214,7 +214,7 @@ class SmartTokenRouting {
             // Set new timeout for pathfinding calculation
             const timeoutId = setTimeout(() => {
                 this.calculateDragPathfinding(token, dragInfo.startPos, targetPos);
-            }, 500);
+            }, 50);
             
             this.pathfindingTimeouts.set(tokenId, timeoutId);
         }
