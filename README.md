@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-orange)](module.json)
 
-A FoundryVTT v13 module that enhances token movement with intelligent pathfinding using the routinglib library. Provides real-time pathfinding calculations during token drag operations with automatic fallback to direct movement when complex routing isn't available.
+A FoundryVTT v13 module that enhances token movement with intelligent pathfinding using the **routinglib** library. Leverages routinglib's hybrid JavaScript/Rust architecture with WebAssembly for high-performance pathfinding calculations. Provides real-time pathfinding during token drag operations with centralized coordinate system integration and automatic fallback to direct movement when complex routing isn't available.
 
 ## ✨ Features
 
@@ -19,8 +19,12 @@ A FoundryVTT v13 module that enhances token movement with intelligent pathfindin
 
 ## 📋 Requirements
 
-- **FoundryVTT v13** or higher
-- **[Routinglib](https://foundryvtt.com/packages/routinglib)** module (automatically installed as dependency)
+- **FoundryVTT v13** or higher (minimum v11 supported)
+- **[Routinglib v1.1.4+](https://foundryvtt.com/packages/routinglib)** module (automatically installed as dependency)
+  - Provides hybrid JavaScript/Rust pathfinding engine with WebAssembly
+  - Supports square grids, hex grids, and gridless scenes
+  - Includes advanced wall analysis and caching system
+  - Centralized coordinate helper for consistent coordinate transformations
 
 ## 🚀 Installation
 
@@ -59,19 +63,33 @@ A FoundryVTT v13 module that enhances token movement with intelligent pathfindin
 | **Maximum Path Distance** | Limits pathfinding calculations for performance (1000 units) | 1000 |
 | **Debug Mode** | Shows detailed pathfinding information in console | ❌ Disabled |
 
-## 🎮 Supported Game Systems
+## 🎮 Supported Game Systems & Capabilities
 
-Smart Token Routing works with **all FoundryVTT game systems** that use standard token movement. It integrates seamlessly with:
+Smart Token Routing works with **all FoundryVTT game systems** that use standard token movement. Based on routinglib's capabilities:
 
-- **Grid Types**: Square grids, hex grids, and gridless scenes
-- **Token Sizes**: All token sizes from small (1x1) to huge (4x4+)
-- **Terrain**: Supports difficult terrain when used with Terrain Ruler
-- **Elevation**: Works with wall height and token elevation systems
+### Grid Type Support
+| Grid Type | Performance | Capabilities |
+|-----------|-------------|--------------|
+| **Square/Hex Grids** | ⚡ Fast | Shortest possible paths, grid-snapped waypoints |
+| **Gridless Scenes** | ⚡ Fast (small scenes)<br>🐌 Slower (large scenes) | Near-optimal paths, pixel-precise positioning |
+
+### Advanced Features
+- **Token Sizes**: All sizes from 1x1 to 4x4+ with size-aware pathfinding
+- **Difficult Terrain**: Full support when used with Terrain Ruler
+- **Elevation**: Multi-level scenes with wall height and token elevation
+- **Wall Analysis**: Advanced wall detection and collision avoidance
+- **Performance Caching**: Aggressive caching of walls, graphs, and paths
+
+### Current Limitations (Roadmap Items)
+- Even-sized tokens cannot squeeze through 1-square hallways *(under development)*
+- Gridless difficult terrain currently unsupported *(planned)*
+- Performance scales with scene complexity on very large maps
 
 ## 🔧 Developer API
 
-Smart Token Routing provides a public API for other modules:
+Smart Token Routing provides a public API for other modules and integrates with routinglib's comprehensive API:
 
+### Smart Token Routing API
 ```javascript
 // Check if pathfinding is available
 if (SmartTokenRouting.api.isAvailable()) {
@@ -84,6 +102,32 @@ SmartTokenRouting.api.setEnabled(false);
 // Get module version
 const version = SmartTokenRouting.api.getVersion();
 ```
+
+### Routinglib Integration
+Smart Token Routing leverages routinglib's full API for advanced pathfinding:
+
+```javascript
+// Direct access to routinglib pathfinding
+const result = await window.routinglib.calculatePath(from, to, {
+    token: token,
+    maxDistance: 1000,
+    ignoreTerrain: false
+});
+
+// Use centralized coordinate helper
+const gridPos = window.routinglib.coordinateHelper.pixelToGrid(x, y, tokenData);
+const pixelPos = window.routinglib.coordinateHelper.gridToPixel(gridX, gridY, tokenData);
+
+// Debug and analysis tools
+window.routinglib.enableDebugForPositions([{x: 10, y: 10}]);
+window.routinglib.analyzeWalls();
+```
+
+### Coordinate System Integration
+- **Centralized System**: Both modules use routinglib's coordinate helper
+- **Token Size Aware**: Automatic token size detection and conversion
+- **Grid Type Adaptive**: Handles square, hex, and gridless scenes seamlessly
+- **Elevation Support**: Multi-level coordinate calculations
 
 ## 🐛 Troubleshooting
 
@@ -130,9 +174,22 @@ Enable debug mode in the module settings to see:
 - **Levels** - Works with multi-level scenes
 
 ### ⚠️ Known Limitations
-- Very complex scenes with thousands of walls may experience slower pathfinding
-- Pathfinding accuracy depends on the quality of wall placement in your scenes
-- Some edge cases with irregular token shapes may not be perfectly handled
+These limitations are inherited from routinglib's current architecture:
+
+#### Pathfinding Constraints
+- **Even-sized tokens**: Cannot squeeze through 1-square hallways *(being addressed in internal grid system roadmap)*
+- **Complex scenes**: Performance scales with wall complexity on very large maps
+- **Gridless terrain**: Difficult terrain not yet supported on gridless scenes
+
+#### Technical Limitations  
+- **Coordinate precision**: Grid-snapped waypoints on gridded scenes
+- **Cache dependencies**: Performance depends on effective wall/graph caching
+- **WASM initialization**: Brief delay during first pathfinding operation
+
+#### Future Improvements
+- **Multi-scale pathfinding**: Hierarchical A* for large maps *(roadmap)*
+- **Internal grid system**: 4x subdivision for better narrow passage navigation *(roadmap)*
+- **Enhanced terrain**: Full difficult terrain support on all grid types *(planned)*
 
 ## 📜 License
 
@@ -140,9 +197,11 @@ This module is licensed under the [MIT License](LICENSE). You are free to use, m
 
 ## 🙏 Acknowledgments
 
-- **[Routinglib](https://github.com/manuelVo/foundryvtt-routinglib)** by Manuel Vögele - The core pathfinding engine
-- **FoundryVTT Community** - For extensive testing and feedback
-- **[Drag Ruler](https://github.com/manuelVo/foundryvtt-drag-ruler)** - Inspiration for token movement enhancements
+- **[Routinglib](https://github.com/manuelVo/foundryvtt-routinglib)** by Manuel Vögele - The core hybrid JavaScript/Rust pathfinding engine with WebAssembly optimization
+- **Ludo Bermejo** - Coordinate system integration and FoundryVTT v13 compatibility enhancements
+- **[Drag Ruler](https://github.com/manuelVo/foundryvtt-drag-ruler)** - Original inspiration for advanced token movement features  
+- **FoundryVTT Community** - Extensive testing, feedback, and feature suggestions
+- **Rust/WASM Ecosystem** - High-performance pathfinding algorithms and WebAssembly integration
 
 ## 📞 Support
 

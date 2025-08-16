@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:foundryvtt.com)",
       "WebSearch",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "WebFetch(domain:gitlab.com)"
     ],
     "deny": [],
     "ask": []

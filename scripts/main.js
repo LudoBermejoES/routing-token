@@ -319,6 +319,9 @@ class SmartTokenRouting {
                     dragInfo.currentPath = pixelPath;
                 }
                 
+                // Update the token's ruler to show the calculated path
+                this.updateTokenRuler(token, pixelPath);
+                
                 
             } else {
                 // Create a simple direct path from origin to destination (like FoundryVTT default)
@@ -343,6 +346,9 @@ class SmartTokenRouting {
                     if (dragInfo) {
                         dragInfo.currentPath = directPath;
                     }
+                    
+                    // Update the token's ruler to show the direct path
+                    this.updateTokenRuler(token, directPath);
                 } catch (normalizeError) {
                     if (game.settings.get(MODULE_NAME, "debugMode")) {
                         console.warn(`[${MODULE_NAME}] Failed to normalize direct path coordinates:`, normalizeError);
@@ -352,12 +358,57 @@ class SmartTokenRouting {
                     if (dragInfo) {
                         dragInfo.currentPath = [startPos, targetPos];
                     }
+                    
+                    // Update the token's ruler to show the fallback direct path
+                    this.updateTokenRuler(token, [startPos, targetPos]);
                 }
             }
             
         } catch (error) {
             if (game.settings.get(MODULE_NAME, "debugMode")) {
                 console.warn(`[${MODULE_NAME}] Drag pathfinding error:`, error);
+            }
+        }
+    }
+    
+    /**
+     * Update the token's ruler to display the calculated path
+     * Uses FoundryVTT v13's native updateDragRulerPath method if available
+     */
+    updateTokenRuler(token, pixelPath) {
+        if (!token || !pixelPath || pixelPath.length < 2) return;
+        
+        try {
+            // Convert pixel path to FoundryVTT v13 waypoint format
+            const waypoints = pixelPath.map(point => ({
+                x: point.x,
+                y: point.y,
+                elevation: token.document.elevation || 0
+            }));
+            
+            // Try to use FoundryVTT v13's native updateDragRulerPath method
+            if (typeof token.updateDragRulerPath === 'function') {
+                token.updateDragRulerPath(waypoints);
+            } 
+            // Fallback: try the TokenLayer method
+            else if (canvas.tokens && typeof canvas.tokens.updateDragRulerPaths === 'function') {
+                canvas.tokens.updateDragRulerPaths();
+            }
+            // Final fallback: try to trigger ruler recalculation
+            else if (token.ruler) {
+                // Just ensure the ruler is visible during drag
+                if (token.ruler.visible !== undefined) {
+                    token.ruler.visible = true;
+                }
+            }
+            
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.log(`[${MODULE_NAME}] 📏 Updated ruler with ${waypoints.length} waypoints for ${token.name}`);
+            }
+            
+        } catch (error) {
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.warn(`[${MODULE_NAME}] Failed to update token ruler:`, error);
             }
         }
     }
