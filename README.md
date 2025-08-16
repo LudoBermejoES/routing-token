@@ -4,16 +4,17 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-orange)](module.json)
 
-A FoundryVTT v13 module that enhances token movement with intelligent pathfinding using the routinglib library. Automatically calculates optimal paths around walls and obstacles during token drag operations, making movement more intuitive and realistic.
+A FoundryVTT v13 module that enhances token movement with intelligent pathfinding using the routinglib library. Provides real-time pathfinding calculations during token drag operations with automatic fallback to direct movement when complex routing isn't available.
 
 ## ✨ Features
 
-- **🧠 Intelligent Pathfinding**: Automatically calculates optimal routes around walls and obstacles
-- **🎯 Seamless Integration**: Works transparently with FoundryVTT v13's new token drag system
-- **⚡ Performance Optimized**: Asynchronous pathfinding prevents UI blocking
-- **🎨 Visual Feedback**: Optional path visualization during movement
-- **🌍 Multi-language Support**: Available in English and Spanish
-- **⚙️ Configurable**: Extensive settings for customization
+- **🧠 Intelligent Pathfinding**: Automatically calculates optimal routes around walls and obstacles using routinglib
+- **🎯 Real-time Drag Pathfinding**: Calculates paths during token dragging with 50ms debounced updates
+- **📏 Ruler Integration**: Updates token ruler to show calculated paths during drag operations  
+- **⚡ Performance Optimized**: Asynchronous pathfinding with timeout management prevents UI blocking
+- **🔄 Smart Fallback**: Creates normalized direct paths when complex pathfinding fails
+- **🎯 Token Size Aware**: Supports tokens of all sizes with proper coordinate calculations
+- **⚙️ Configurable**: Extensive settings for pathfinding behavior and debugging
 - **🔧 Developer API**: Extensible API for other modules
 
 ## 📋 Requirements
@@ -44,18 +45,19 @@ A FoundryVTT v13 module that enhances token movement with intelligent pathfindin
 ## 📖 How to Use
 
 1. **Enable the Module**: Activate both "Smart Token Routing" and "Routinglib" in your world's module settings
-2. **Configure Settings**: Adjust pathfinding behavior in the module settings menu
-3. **Move Tokens**: Simply drag tokens as usual - pathfinding happens automatically!
-4. **Watch the Magic**: Tokens will automatically navigate around walls and obstacles
+2. **Configure Settings**: Adjust pathfinding behavior in the module settings menu  
+3. **Move Tokens**: Simply drag tokens as usual - pathfinding calculations happen automatically during drag operations
+4. **Visual Feedback**: Watch the token ruler update in real-time to show the calculated path
+5. **Auto-Follow**: When enabled, tokens will follow the calculated waypoint path instead of moving directly
 
 ### 🎛️ Configuration Options
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| **Enable Smart Pathfinding** | Toggles automatic pathfinding during token movement | ✅ Enabled |
-| **Visualize Calculated Paths** | Shows the calculated route on the canvas | ✅ Enabled |
-| **Maximum Path Distance** | Limits pathfinding calculations for performance | 1000 units |
-| **Debug Mode** | Shows detailed pathfinding information | ❌ Disabled |
+| **Enable Pathfinding** | Toggles automatic pathfinding during token movement | ✅ Enabled |
+| **Auto-Follow Calculated Paths** | When enabled, tokens automatically follow calculated routes instead of direct movement | ✅ Enabled |
+| **Maximum Path Distance** | Limits pathfinding calculations for performance (1000 units) | 1000 |
+| **Debug Mode** | Shows detailed pathfinding information in console | ❌ Disabled |
 
 ## 🎮 Supported Game Systems
 
@@ -91,24 +93,32 @@ const version = SmartTokenRouting.api.getVersion();
 - Ensure both Smart Token Routing and Routinglib modules are enabled
 - Check that you're using FoundryVTT v13 or higher
 - Verify the token you're moving is not locked or restricted
+- Check console for "RoutingLib coordinate helper not available" errors
 
 **❓ Performance issues on large maps**
-- Reduce the "Maximum Path Distance" setting
-- Disable "Visualize Calculated Paths" for better performance
+- Reduce the "Maximum Path Distance" setting (default: 1000)
+- The module uses 50ms debounced calculations to optimize performance
 - Consider updating to a faster system if pathfinding is consistently slow
 
 **❓ Tokens moving in unexpected ways**
-- Enable debug mode to see pathfinding calculations
+- Enable debug mode to see pathfinding calculations in the console
 - Check for walls or obstacles that might be blocking direct routes
 - Verify your scene's wall configuration is correct
+- The module automatically falls back to direct movement if pathfinding fails
+
+**❓ Ruler not updating during drag**
+- Ensure the token ruler system is working properly in FoundryVTT
+- Check debug mode for ruler update errors
+- Verify that drag operations are properly triggering pathfinding
 
 ### Debug Mode
 
 Enable debug mode in the module settings to see:
-- Real-time pathfinding status
-- Calculation times and path costs
-- Console logging of pathfinding operations
-- Visual overlays showing calculation progress
+- Real-time pathfinding status and coordinate calculations
+- Grid and pixel coordinate conversions
+- Path calculation results and fallback behavior
+- Ruler update operations and drag state tracking
+- Console logging of all pathfinding operations
 
 ## 🤝 Compatibility
 
@@ -152,11 +162,13 @@ Contributions are welcome! Please feel free to:
 
 ### Version 1.0.0
 - ✨ Initial release
-- 🧠 Intelligent pathfinding integration with FoundryVTT v13
-- 🎨 Path visualization system
-- 🌍 Multi-language support (English, Spanish)
-- ⚙️ Comprehensive settings panel
-- 📖 Full documentation and examples
+- 🧠 Intelligent pathfinding integration with FoundryVTT v13 using routinglib
+- 🎯 Real-time drag pathfinding with 50ms debounced calculations
+- 📏 Token ruler integration for visual feedback during drag operations
+- 🔄 Smart fallback system with normalized direct paths
+- 🎯 Token size awareness for proper coordinate calculations
+- ⚙️ Comprehensive settings panel with auto-follow toggle
+- 🔧 Public API for module integration
 
 ---
 
