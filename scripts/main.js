@@ -14,7 +14,6 @@ class SmartTokenRouting {
         this.routinglibReady = false;
         this.activePathfindingJobs = new Map();
         this.dragState = new Map(); // Track drag operations per token
-        this.pathfindingTimeouts = new Map(); // Track debounced pathfinding timers
         
         console.log(`[${MODULE_NAME}] Initializing Smart Token Routing v1.0.0 with Real-time Drag Pathfinding`);
     }
@@ -174,41 +173,15 @@ class SmartTokenRouting {
     }
     
     /**
-     * Handle canvas pointer move - check for active drags and calculate pathfinding
+     * Handle canvas pointer move - no pathfinding during drag, only track movement
      */
     onCanvasPointerMove(event) {
-        if (!this.enabled || !this.routinglibReady) return;
-        
-        // Check if any tokens are being dragged
-        for (const [tokenId, dragInfo] of this.dragState) {
-            if (!dragInfo.isActive) continue;
-            
-            const token = canvas.tokens.get(tokenId);
-            if (!token) continue;
-            
-            // Get current mouse position in world coordinates
-            const mousePos = event.data.getLocalPosition(canvas.stage);
-            const targetPos = { x: mousePos.x, y: mousePos.y };
-            
-            if (game.settings.get(MODULE_NAME, "debugMode")) {
-                console.log(`[${MODULE_NAME}] 🖱️ Drag move for ${token.name} to (${targetPos.x}, ${targetPos.y})`);
-            }
-            
-            // Clear any existing pathfinding timeout
-            this.clearPathfindingTimeout(tokenId);
-            
-            
-            // Set new timeout for pathfinding calculation
-            const timeoutId = setTimeout(() => {
-                this.calculateDragPathfinding(token, dragInfo.startPos, targetPos);
-            }, 50);
-            
-            this.pathfindingTimeouts.set(tokenId, timeoutId);
-        }
+        // No real-time pathfinding - this will only be calculated on drop
+        return;
     }
     
     /**
-     * Handle drag drop - execute the calculated waypoints
+     * Handle drag drop - calculate pathfinding only on drop
      * @returns {boolean} True if waypoints will be used, false if original movement should proceed
      */
     async onDragDrop(token, event) {
@@ -217,27 +190,44 @@ class SmartTokenRouting {
         const dragInfo = this.dragState.get(token.id);
         if (!dragInfo) return false;
         
-        // Clear any pending pathfinding timeout
-        this.clearPathfindingTimeout(token.id);
-        
         if (game.settings.get(MODULE_NAME, "debugMode")) {
             console.log(`[${MODULE_NAME}] 🎯 Drag completed for ${token.name}`);
         }
         
-        // If we have a calculated path and auto-follow is enabled, use it
-        if (dragInfo.currentPath && game.settings.get(MODULE_NAME, "autoFollowPath")) {
-            if (game.settings.get(MODULE_NAME, "debugMode")) {
-                console.log(`[${MODULE_NAME}] 🛤️ Executing calculated waypoint path instead of original movement`);
+        // Calculate pathfinding only now, on drop
+        if (this.routinglibReady && game.settings.get(MODULE_NAME, "autoFollowPath")) {
+            try {
+                // Get the final drop position
+                const mousePos = event.data.getLocalPosition(canvas.stage);
+                const targetPos = { x: mousePos.x, y: mousePos.y };
+                
+                if (game.settings.get(MODULE_NAME, "debugMode")) {
+                    console.log(`[${MODULE_NAME}] 📊 Calculating pathfinding on drop from (${dragInfo.startPos.x}, ${dragInfo.startPos.y}) to (${targetPos.x}, ${targetPos.y})`);
+                }
+                
+                // Calculate pathfinding for the final position
+                await this.calculateDragPathfinding(token, dragInfo.startPos, targetPos);
+                
+                // Use the calculated path if available
+                if (dragInfo.currentPath && dragInfo.currentPath.length > 1) {
+                    if (game.settings.get(MODULE_NAME, "debugMode")) {
+                        console.log(`[${MODULE_NAME}] 🛤️ Executing calculated waypoint path with ${dragInfo.currentPath.length} waypoints`);
+                    }
+                    
+                    // Execute waypoint movement
+                    setTimeout(async () => {
+                        await this.moveTokenThroughWaypoints(token, dragInfo.currentPath);
+                    }, 10);
+                    
+                    // Clean up drag state
+                    this.dragState.delete(token.id);
+                    return true; // Indicate that waypoints will be used
+                }
+            } catch (error) {
+                if (game.settings.get(MODULE_NAME, "debugMode")) {
+                    console.warn(`[${MODULE_NAME}] Drop pathfinding failed, using default movement:`, error);
+                }
             }
-            
-            // Execute waypoint movement immediately without delay
-            setTimeout(async () => {
-                await this.moveTokenThroughWaypoints(token, dragInfo.currentPath);
-            }, 10);
-            
-            // Clean up drag state
-            this.dragState.delete(token.id);
-            return true; // Indicate that waypoints will be used
         }
         
         // Clean up drag state
@@ -413,16 +403,6 @@ class SmartTokenRouting {
         }
     }
     
-    /**
-     * Clear pathfinding timeout for a token
-     */
-    clearPathfindingTimeout(tokenId) {
-        const timeoutId = this.pathfindingTimeouts.get(tokenId);
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-            this.pathfindingTimeouts.delete(tokenId);
-        }
-    }
     
     /**
      * Move token through waypoints using FoundryVTT v13 native waypoint system
@@ -520,10 +500,8 @@ class SmartTokenRouting {
         }
         this.activePathfindingJobs.clear();
         
-        // Clear drag state and pathfinding timeouts
+        // Clear drag state
         this.dragState.clear();
-        this.pathfindingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
-        this.pathfindingTimeouts.clear();
         
 
         if (game.settings.get(MODULE_NAME, "debugMode")) {
