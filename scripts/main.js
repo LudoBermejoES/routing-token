@@ -241,6 +241,95 @@ class SmartTokenRouting {
     animatingTokens = new Set();
     
     /**
+     * Find an accessible destination when the target is blocked by walls
+     */
+    async findAccessibleDestination(gridFromPos, gridToPos, tokenData) {
+        // Access stepCollidesWithWall from routinglib API
+        if (!window.routinglib || !window.routinglib.stepCollidesWithWall) {
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.warn(`[${MODULE_NAME}] stepCollidesWithWall not available, using original destination`);
+            }
+            return {
+                finalDestination: gridToPos,
+                pathDestination: gridToPos
+            };
+        }
+        
+        const stepCollidesWithWall = window.routinglib.stepCollidesWithWall;
+        
+        // Check if we can move directly to the destination
+        const originalBlocked = stepCollidesWithWall(gridFromPos, gridToPos, tokenData);
+        
+        if (!originalBlocked) {
+            // Original destination is accessible
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.log(`[${MODULE_NAME}] 🎯 Original destination (${gridToPos.x}, ${gridToPos.y}) is accessible`);
+            }
+            return {
+                finalDestination: gridToPos,
+                pathDestination: gridToPos
+            };
+        }
+        
+        if (game.settings.get(MODULE_NAME, "debugMode")) {
+            console.log(`[${MODULE_NAME}] 🚫 Original destination (${gridToPos.x}, ${gridToPos.y}) is blocked, finding alternative`);
+        }
+        
+        // Find the nearest accessible cell within a reasonable radius
+        const searchRadius = 5; // Search up to 5 cells away
+        let bestAlternative = null;
+        let shortestDistance = Infinity;
+        
+        for (let radius = 1; radius <= searchRadius; radius++) {
+            // Check cells in a square pattern at this radius
+            for (let dx = -radius; dx <= radius; dx++) {
+                for (let dy = -radius; dy <= radius; dy++) {
+                    // Skip cells that aren't on the current radius perimeter
+                    if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) continue;
+                    
+                    const candidatePos = {
+                        x: gridToPos.x + dx,
+                        y: gridToPos.y + dy
+                    };
+                    
+                    // Check if this candidate position is accessible
+                    const candidateBlocked = stepCollidesWithWall(gridFromPos, candidatePos, tokenData);
+                    
+                    if (!candidateBlocked) {
+                        const distance = Math.abs(dx) + Math.abs(dy); // Manhattan distance
+                        if (distance < shortestDistance) {
+                            shortestDistance = distance;
+                            bestAlternative = candidatePos;
+                        }
+                    }
+                }
+            }
+            
+            // If we found an alternative at this radius, use it
+            if (bestAlternative) break;
+        }
+        
+        if (bestAlternative) {
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.log(`[${MODULE_NAME}] 🔄 Found accessible alternative at (${bestAlternative.x}, ${bestAlternative.y}), distance: ${shortestDistance}`);
+            }
+            return {
+                finalDestination: gridToPos, // Still want to end up at the original destination
+                pathDestination: bestAlternative // But pathfind to the accessible cell
+            };
+        } else {
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.log(`[${MODULE_NAME}] ⚠️ No accessible alternative found within ${searchRadius} cells`);
+            }
+            // Return original destination as fallback
+            return {
+                finalDestination: gridToPos,
+                pathDestination: gridToPos
+            };
+        }
+    }
+
+    /**
      * Calculate pathfinding during drag operation
      */
     async calculateDragPathfinding(token, startPos, targetPos) {
@@ -294,7 +383,10 @@ class SmartTokenRouting {
                 console.log(`[${MODULE_NAME}] Direct distance: ${directDistance}, Max search: ${maxSearchDistance}`);
             }
 
-            const result = await window.routinglib.calculatePath(gridFromPos, gridToPos, {
+            // Check if destination is blocked and find alternative if needed
+            const { finalDestination, pathDestination } = await this.findAccessibleDestination(gridFromPos, gridToPos, tokenData);
+
+            const result = await window.routinglib.calculatePath(gridFromPos, pathDestination, {
                 token: token,
                 maxDistance: maxSearchDistance
             });
@@ -309,7 +401,17 @@ class SmartTokenRouting {
                 }
                 
                 // Convert grid coordinates back to pixel coordinates using token data
-                const pixelPath = result.path.map(point => this.gridToPixelPosition(point, tokenData));
+                let pixelPath = result.path.map(point => this.gridToPixelPosition(point, tokenData));
+                
+                // If we used an alternative destination, add the final segment to the original target
+                if (finalDestination.x !== pathDestination.x || finalDestination.y !== pathDestination.y) {
+                    const originalTargetPixel = this.gridToPixelPosition(finalDestination, tokenData);
+                    pixelPath.push(originalTargetPixel);
+                    
+                    if (game.settings.get(MODULE_NAME, "debugMode")) {
+                        console.log(`[${MODULE_NAME}] ➕ Added final segment to original destination (${finalDestination.x}, ${finalDestination.y})`);
+                    }
+                }
                 
                 if (game.settings.get(MODULE_NAME, "debugMode")) {
                     console.log(`[${MODULE_NAME}] Converted pixel path:`, pixelPath.map(p => `(${Math.round(p.x)},${Math.round(p.y)})`).join(' → '));
