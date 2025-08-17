@@ -281,9 +281,22 @@ class SmartTokenRouting {
                 console.log(`[${MODULE_NAME}]   Grid:   (${gridFromPos.x}, ${gridFromPos.y}) → (${gridToPos.x}, ${gridToPos.y})`);
             }
             
+            // Calculate a reasonable maxDistance based on the actual move distance
+            // Use Manhattan distance as base, then add some buffer for detours
+            const directDistance = Math.abs(gridToPos.x - gridFromPos.x) + Math.abs(gridToPos.y - gridFromPos.y);
+            const maxSearchDistance = Math.min(
+                directDistance * 3 + 10, // Allow 3x detour plus buffer
+                game.settings.get(MODULE_NAME, "maxPathDistance"), // But respect user setting
+                50 // Hard limit to prevent runaway pathfinding
+            );
+            
+            if (game.settings.get(MODULE_NAME, "debugMode")) {
+                console.log(`[${MODULE_NAME}] Direct distance: ${directDistance}, Max search: ${maxSearchDistance}`);
+            }
+
             const result = await window.routinglib.calculatePath(gridFromPos, gridToPos, {
                 token: token,
-                maxDistance: game.settings.get(MODULE_NAME, "maxPathDistance")
+                maxDistance: maxSearchDistance
             });
 
             console.log(result);
