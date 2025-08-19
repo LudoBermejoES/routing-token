@@ -4,7 +4,11 @@
       "WebFetch(domain:foundryvtt.com)",
       "WebSearch",
       "Bash(rm:*)",
-      "WebFetch(domain:gitlab.com)"
+      "WebFetch(domain:gitlab.com)",
+      "Bash(mkdir:*)",
+      "Bash(copy:*)",
+      "Bash(cp:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
