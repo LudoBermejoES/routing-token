@@ -4,111 +4,30 @@
  */
 
 /**
- * Calculate maximum movement range based on game system
- * @param {Actor} actor - The actor to calculate movement for
- * @returns {number} Maximum movement range in game units
+ * Reference to movement calculation service instance (will be injected)
  */
-function getSystemMovementRange(actor) {
-    const systemId = game.system.id;
-    
-    switch (systemId) {
-        case 'swade':
-            return getSwadeMovementRange(actor);
-        case 'dnd5e':
-            return getDnd5eMovementRange(actor);
-        case 'pf2e':
-            return getPf2eMovementRange(actor);
-        default:
-            return 6; // Default fallback
-    }
+let movementCalculationService = null;
+
+/**
+ * Set the movement calculation service reference for grid highlighting
+ * @param {MovementCalculationService} service - The movement calculation service instance
+ */
+export function setMovementCalculationService(service) {
+    movementCalculationService = service;
 }
 
 /**
- * Calculate movement range for SWADE system
- * @param {Actor} actor - The SWADE actor
- * @returns {number} Movement range in inches
+ * Reference to combat service instance (will be injected)
  */
-function getSwadeMovementRange(actor) {
-    try {
-        const pace = actor?.system?.pace;
-        if (!pace) return 6; // Default SWADE pace
-        
-        const groundPace = pace.ground?.value ?? pace.default ?? 6;
-        return Math.max(1, groundPace);
-    } catch (error) {
-        if (game.settings.get("routing-token", "debugMode")) {
-            console.warn(`[routing-token] Error calculating SWADE movement for ${actor.name}:`, error);
-        }
-        return 6;
-    }
-}
+let combatService = null;
 
 /**
- * Calculate movement range for D&D 5e system
- * @param {Actor} actor - The D&D 5e actor
- * @returns {number} Movement range in feet
+ * Set the combat service reference for grid highlighting
+ * @param {CombatService} service - The combat service instance
  */
-function getDnd5eMovementRange(actor) {
-    try {
-        const speed = actor?.system?.attributes?.movement?.walk ?? 30;
-        return Math.max(5, speed);
-    } catch (error) {
-        if (game.settings.get("routing-token", "debugMode")) {
-            console.warn(`[routing-token] Error calculating D&D 5e movement for ${actor.name}:`, error);
-        }
-        return 30;
-    }
+export function setCombatService(service) {
+    combatService = service;
 }
-
-/**
- * Calculate movement range for Pathfinder 2e system
- * @param {Actor} actor - The PF2e actor
- * @returns {number} Movement range in feet
- */
-function getPf2eMovementRange(actor) {
-    try {
-        const speed = actor?.system?.attributes?.speed?.value ?? 25;
-        return Math.max(5, speed);
-    } catch (error) {
-        if (game.settings.get("routing-token", "debugMode")) {
-            console.warn(`[routing-token] Error calculating PF2e movement for ${actor.name}:`, error);
-        }
-        return 25;
-    }
-}
-
-/**
- * Calculate terrain-adjusted movement cost from ruler label with delay - the ONLY working method
- * @param {Token} token - The token instance
- * @returns {Promise<number|null>} Promise that resolves to terrain-adjusted movement cost or null if not available
- */
-async function calculateMovementCost(token) {
-    // Wait 100ms for ruler to update properly
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    try {
-        // Extract terrain-adjusted cost from ruler label - this is the only method that works
-        const rulerLabelText = $(".total-measurement", token.ruler.labels).text();
-        if (rulerLabelText) {
-            // Extract numeric part from text like "14 in" or "12 ft"
-            const numericMatch = rulerLabelText.match(/(\d+(?:\.\d+)?)/);
-            if (numericMatch) {
-                return parseFloat(numericMatch[1]);
-            }
-        }
-    } catch (error) {
-        // Silent fail if ruler not available
-        if (game.settings.get("routing-token", "debugMode")) {
-            console.warn("[routing-token] Could not extract cost from ruler label:", error);
-        }
-    }
-    return null;
-}
-
-/**
- * Track if we're in delayed calculation mode for each token
- */
-const tokenCalculationState = new Map();
 
 /**
  * Custom grid highlight style function
@@ -118,56 +37,70 @@ const tokenCalculationState = new Map();
  * @returns {Object} Style configuration with color, alpha, etc.
  */
 function getCustomGridHighlightStyle(token, waypoint, offset) {
-
     setTimeout(() => {
         token.refresh();
     }, 100)
-      return getCalculatedGridColorSync(token);
+    console.log(getCalculatedGridColorSync(token));
+    return getCalculatedGridColorSync(token);
 }
 
 /**
- * Get the calculated color synchronously (used after delay is complete)
+ * Get the calculated color based on remaining movement in combat
  * @param {Token} token - The token instance
  * @returns {Object} Style configuration with color, alpha, etc.
  */
 function getCalculatedGridColorSync(token) {
     try {
-        // Get ruler text immediately (no delay needed since we already waited)
+        // Get ruler text for current movement cost to this square
         const rulerLabelText = $(".total-measurement", token.ruler.labels).text();
-
         console.log(rulerLabelText);
-        let movementCost = null;
         
-        if (rulerLabelText) {
-            const numericMatch = rulerLabelText.match(/(\d+(?:\.\d+)?)/);
-            if (numericMatch) {
-                movementCost = parseFloat(numericMatch[1]);
-            }
-        }
+        // Use movement calculation service to extract cost
+        const movementCostToSquare = movementCalculationService ? 
+            movementCalculationService.getMovementCostSync(token) : null;
         
         // If we can't get the movement cost from ruler, show green (neutral)
-        if (movementCost === null) {
+        if (movementCostToSquare === null) {
             return { color: 0x00FF00, alpha: 0.3 };
         }
         
-        // Get character's movement range
-        const characterMovementRange = getSystemMovementRange(token.actor);
+        // Get character's total movement capacity
+        const characterMaxMovement = movementCalculationService ? 
+            movementCalculationService.getSystemMovementRange(token.actor) : 6;
         
-        // Simple binary coloring: green if within range, red if beyond
-        if (movementCost <= characterMovementRange) {
-            return { color: 0x00FF00, alpha: 0.3 }; // Green for within range
+        // Get movement already used this combat round (terrain-aware)
+        const usedMovement = combatService ? combatService.getCombatMovementUsed(token.id, game.combat?.round) : 0;
+        
+        // Calculate remaining movement capacity
+        const remainingMovement = characterMaxMovement - usedMovement;
+        
+        // Debug logging
+        if (game.settings.get("routing-token", "debugMode")) {
+            console.log(`[routing-token] Combat movement analysis:`, {
+                maxMovement: `${characterMaxMovement} ${canvas.scene.grid.units}`,
+                usedMovement: `${usedMovement} ${canvas.scene.grid.units}`,
+                remainingMovement: `${remainingMovement} ${canvas.scene.grid.units}`,
+                costToSquare: `${movementCostToSquare} ${canvas.scene.grid.units}`,
+                canReach: movementCostToSquare <= remainingMovement
+            });
+        }
+        
+        // Color based on remaining movement capacity
+        if (movementCostToSquare <= remainingMovement) {
+            return { color: 0x00FF00, alpha: 0.3 }; // Green - can reach with remaining movement
         } else {
-            return { color: 0xFF0000, alpha: 0.2 }; // Red for beyond range
+            return { color: 0xFF0000, alpha: 0.2 }; // Red - exceeds remaining movement
         }
         
     } catch (error) {
         if (game.settings.get("routing-token", "debugMode")) {
-            console.warn(`[routing-token] Error in sync grid color calculation:`, error);
+            console.warn(`[routing-token] Error in combat movement color calculation:`, error);
         }
         // Fallback to green if something goes wrong
         return { color: 0x00FF00, alpha: 0.3 };
     }
 }
+
 
 /**
  * Apply custom TokenRuler overrides to the Token prototype
@@ -191,6 +124,7 @@ export function setupCustomTokenRulerMethods() {
     if (TokenRulerClass && TokenRulerClass.prototype) {
         // Override the _getGridHighlightStyle method
         TokenRulerClass.prototype._getGridHighlightStyle = function(waypoint, offset) {
+            console.log("Cambio de color")
             return getCustomGridHighlightStyle(this.token, waypoint, offset);
         };
         

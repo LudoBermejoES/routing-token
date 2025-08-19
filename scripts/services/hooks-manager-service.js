@@ -1,15 +1,17 @@
-import { setupCustomTokenRulerMethods } from './custom-token-ruler.js';
+import { setupCustomTokenRulerMethods, setCombatService, setMovementCalculationService } from './custom-token-ruler.js';
 
 /**
  * Hooks Manager Service for Smart Token Routing
  * Centralizes all Foundry VTT hook management and event handling
  */
 export class HooksManagerService {
-    constructor(moduleName, settingsService, pathfindingService, dragHandlerService) {
+    constructor(moduleName, settingsService, pathfindingService, dragHandlerService, combatService, movementCalculationService) {
         this.MODULE_NAME = moduleName;
         this.settingsService = settingsService;
         this.pathfindingService = pathfindingService;
         this.dragHandlerService = dragHandlerService;
+        this.combatService = combatService;
+        this.movementCalculationService = movementCalculationService;
         this.registeredHooks = new Set();
     }
 
@@ -20,6 +22,7 @@ export class HooksManagerService {
         this.setupRoutinglibHooks();
         this.setupCanvasHooks();
         this.setupTokenHooks();
+        this.setupCombatHooks();
     }
 
     /**
@@ -65,6 +68,26 @@ export class HooksManagerService {
         // Token control hooks
         const controlTokenHook = Hooks.on("controlToken", this.onControlToken.bind(this));
         this.registeredHooks.add({ id: controlTokenHook, event: "controlToken" });
+    }
+
+    /**
+     * Set up combat-related hooks
+     */
+    setupCombatHooks() {
+        try {
+            // Initialize combat service hooks
+            this.combatService.setupCombatHooks();
+            
+            // Inject services into custom token ruler for grid highlighting
+            setCombatService(this.combatService);
+            setMovementCalculationService(this.movementCalculationService);
+            
+            if (this.settingsService.isDebugMode()) {
+                console.log(`[${this.MODULE_NAME}] Combat movement tracking initialized`);
+            }
+        } catch (error) {
+            console.warn(`[${this.MODULE_NAME}] Failed to setup combat movement tracking:`, error);
+        }
     }
 
     /**

@@ -12,6 +12,8 @@ import { TokenMovementService } from './services/token-movement-service.js';
 import { PathfindingService } from './services/pathfinding-service.js';
 import { DragHandlerService } from './services/drag-handler-service.js';
 import { HooksManagerService } from './services/hooks-manager-service.js';
+import { CombatService } from './services/combat-service.js';
+import { MovementCalculationService } from './services/movement-calculation-service.js';
 
 const MODULE_NAME = "routing-token";
 
@@ -34,11 +36,15 @@ class SmartTokenRouting {
             this.settingsService, 
             this.pathfindingService
         );
+        this.movementCalculationService = new MovementCalculationService(MODULE_NAME);
+        this.combatService = new CombatService(MODULE_NAME, this.movementCalculationService);
         this.hooksManager = new HooksManagerService(
             MODULE_NAME,
             this.settingsService,
             this.pathfindingService,
-            this.dragHandler
+            this.dragHandler,
+            this.combatService,
+            this.movementCalculationService
         );
 
         // Set up settings change listeners
