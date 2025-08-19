@@ -38,7 +38,7 @@ export function setCombatService(service) {
  */
 function getCustomGridHighlightStyle(token, waypoint, offset) {
     setTimeout(() => {
-        token.refresh();
+          token.renderFlags.set({refreshRuler: true});
     }, 100)
     console.log(getCalculatedGridColorSync(token));
     return getCalculatedGridColorSync(token);
